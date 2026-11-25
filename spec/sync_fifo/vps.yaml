@@ -1,0 +1,100 @@
+vps: spec/sync_fifo/vps.yaml@v0.1
+block: sync_fifo
+scenarios:
+  - id: VPS-01
+    slug: reset_outputs
+    req_ids: [REQ-3.3.1, REQ-3.3.2]
+    observe: [IDD-S_IN.in_ready, IDD-M_OUT.out_valid, IDD-M_OUT.out_data]
+    intent: "Hold rst_n at 0 for several edges with in_valid 1, in_data nonzero and out_ready 1 and 0 in turn."
+    expected: "in_ready, out_valid and out_data are all 0 during reset; no word is accepted."
+    checks: ["in_ready == 0 while reset", "out_valid == 0 while reset", "out_data == 0 while reset"]
+    distinguishes: {out_ready_during_reset: [low, high]}
+    formal: false
+  - id: VPS-02
+    slug: single_word_latency
+    req_ids: [REQ-3.1.1, REQ-3.1.4, REQ-3.2.5]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "From empty, with out_ready 1 then 0, offer one word with in_valid 1."
+    expected: "out_valid is 1 one cycle after the accepting edge with the word on out_data; it was 0 before."
+    checks: ["out_valid == 1 within 1 cycles after xfer(in_valid)"]
+    distinguishes: {out_ready_at_accept: [low, high]}
+    formal: false
+  - id: VPS-03
+    slug: order_no_loss
+    req_ids: [REQ-3.1.1, REQ-3.1.2]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "Push a long random sequence with random in_valid and out_ready gaps; the scoreboard compares every out_data word with the accepted order."
+    expected: "Words leave in the order accepted, none lost, none repeated."
+    checks: ["out_valid == 1 within 1 cycles after xfer(in_valid)"]
+    distinguishes: {gap_cycles: [0, 1-3, 4+]}
+    formal: true
+  - id: VPS-04
+    slug: output_stable_in_stall
+    req_ids: [REQ-3.1.3]
+    observe: [IDD-M_OUT.out_valid, IDD-M_OUT.out_data]
+    intent: "With words held, hold out_ready at 0 for 1, 5 and 40 cycles while the source keeps offering words."
+    expected: "out_valid stays 1 and out_data keeps the same nonzero word for the whole stall."
+    checks: ["out_valid == 1 while stall(out_valid)", "out_data != 0 while stall(out_valid)"]
+    distinguishes: {stall_cycles: [1, 2-8, 9+]}
+    formal: false
+  - id: VPS-05
+    slug: capacity_16
+    req_ids: [REQ-3.2.1]
+    observe: [IDD-S_IN.in_ready]
+    intent: "From empty with out_ready 0, offer words continuously; count acceptances."
+    expected: "Exactly 16 words are accepted; in_ready is 1 before each and 0 after the 16th."
+    checks: ["in_ready == 0 after xfer(in_valid)"]
+    distinguishes: {occupancy_at_accept: [zero, mid, max]}
+    formal: true
+  - id: VPS-06
+    slug: full_stall
+    req_ids: [REQ-3.1.3, REQ-3.2.2]
+    observe: [IDD-S_IN.in_ready, IDD-M_OUT.out_valid]
+    intent: "Fill to 16 words, keep in_valid 1 with new data and out_ready 0 for several cycles."
+    expected: "in_ready stays 0, no word is accepted, out_valid stays 1."
+    checks: ["in_ready == 0 while stall(in_valid)", "out_valid == 1 while stall(out_valid)"]
+    distinguishes: {stall_cycles: [1, 2-8, 9+]}
+    formal: true
+  - id: VPS-07
+    slug: full_simultaneous
+    req_ids: [REQ-3.2.3]
+    observe: [IDD-S_IN.in_ready]
+    intent: "Fill to 16 words, then drive in_valid 1 and out_ready 1 in the same cycle, once and for many consecutive cycles."
+    expected: "in_ready is 1 at each such edge; one word is accepted and one taken each edge; 16 words stay held and order is kept."
+    checks: ["in_ready == 1 at xfer(out_valid)"]
+    distinguishes: {consecutive_edges: [1, 2+]}
+    formal: true
+  - id: VPS-08
+    slug: simultaneous_partial
+    req_ids: [REQ-3.1.2, REQ-3.2.4]
+    observe: [IDD-S_IN.in_ready]
+    intent: "At occupancy 1, 2, 8 and 15, drive in_valid 1 and out_ready 1 in the same cycle."
+    expected: "One word accepted and one taken per edge; occupancy unchanged; order kept."
+    checks: ["in_ready == 1 at xfer(out_valid)"]
+    distinguishes: {occupancy_at_edge: [one, mid, max_minus_one]}
+    formal: false
+  - id: VPS-09
+    slug: reset_while_full
+    req_ids: [REQ-3.3.2, REQ-3.3.3]
+    observe: [IDD-S_IN.in_ready, IDD-M_OUT.out_valid]
+    intent: "Fill to 16 words, apply rst_n 0 for 2 edges, release, then offer 16 new words with out_ready 0."
+    expected: "After release out_valid is 0 and in_ready is 1; no old word appears; 16 new words are accepted."
+    checks: ["out_valid == 0 at reset_release", "in_ready == 1 within 1 cycles after reset_release"]
+    distinguishes: {occupancy_at_reset: [zero, mid, max]}
+    formal: false
+  - id: VPS-10
+    slug: drain_to_empty
+    req_ids: [REQ-3.1.2, REQ-3.2.5]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "With out_ready 1 and in_valid 0, take the last held word."
+    expected: "out_valid goes to 0 one cycle after the last word is taken and stays 0."
+    checks: ["out_valid == 0 within 1 cycles after xfer(out_valid)"]
+    distinguishes: {occupancy_at_take: [one, mid]}
+    formal: false
+environment:
+  rst_n: "any value; reset is applied at rising edges"
+  in_valid: "any, but held at 1 with in_data unchanged while in_ready is 0 (IDD-S_IN R1)"
+  in_data: "any 32-bit value"
+  out_ready: "any value, any cycle, including while out_valid is 0"
+  illegal_inputs: ["in_valid dropped or in_data changed while in_valid is 1 and in_ready is 0"]
+retired: {}

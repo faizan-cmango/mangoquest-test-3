@@ -1,0 +1,42 @@
+project: sync_fifo
+sad_version: "0.1"
+scope: full
+blocks:
+  - id: sync_fifo
+    owner: kemi
+    sad_sections: ["3.1", "3.2", "3.3", "6.1"]
+    interfaces: [IDD-S_IN, IDD-M_OUT]
+    idd_files: [idd/s_in.yaml, idd/m_out.yaml]
+    scan_notes: "single clock, synchronous reset, no clock gating, no asynchronous reset; the 15-word store is flop-based and scannable; the store words have no reset"
+peer_blocks: []
+sections:
+  - {id: "1", title: Scope and context, status: complete, req_range: []}
+  - {id: "2", title: Block decomposition, status: complete, req_range: []}
+  - {id: "3.1", title: Transfer and ordering, status: complete, req_range: [REQ-3.1.1, REQ-3.1.2, REQ-3.1.3, REQ-3.1.4]}
+  - {id: "3.2", title: Occupancy and capacity, status: complete, req_range: [REQ-3.2.1, REQ-3.2.2, REQ-3.2.3, REQ-3.2.4, REQ-3.2.5]}
+  - {id: "3.3", title: Reset, status: complete, req_range: [REQ-3.3.1, REQ-3.3.2, REQ-3.3.3]}
+  - {id: "6.1", title: Performance, status: complete, req_range: [REQ-6.1.1, REQ-6.1.2]}
+  - {id: "7", title: Risk register, status: complete, req_range: []}
+  - {id: "8", title: Open items, status: complete, req_range: []}
+documents:
+  idd:       {files: [idd/s_in.yaml, idd/m_out.yaml], authority: "interface behaviour, names, widths, reset values, timing"}
+  vps:       {file: vps.yaml,       authority: "what must be proven (scenarios)"}
+  rtm:       {file: rtm.yaml,       authority: "requirement text, owner, verification method"}
+  riskmap:   {file: riskmap.yaml,   authority: "risk class per block and the targets it implies"}
+  clocks:    {file: clocks.yaml,    authority: "clocks, resets, CDC pairs"}
+  errata:    {file: errata.yaml,    authority: "amendments after release"}
+  decisions: {file: decisions.yaml, authority: "architecture decision records"}
+optional_documents:
+  regmap:   {not_applicable: "no registers: the FIFO has no control or status interface"}
+  power:    {not_applicable: "the brief gives no power target"}
+  debug:    {not_applicable: "no debug interface in the brief"}
+  security: {not_applicable: "no security requirement in the brief"}
+  dft:      {not_applicable: "no DFT requirement in the brief; scan_notes record the scan-relevant facts"}
+  brs:      {not_applicable: "no board requested in the brief"}
+precedence: [errata, idd, clocks, riskmap, rtm, vps, sad_yaml, sad_md]
+waivers: []
+area_budget: {not_applicable: "the brief gives no area target; area is measured by feasibility and reported only"}
+pin_intent: {not_applicable: "the brief gives no pin placement; physical design is not in scope of the brief"}
+feasibility:
+  blocks:
+    - {block: sync_fifo, clock: core_clk, target_mhz: 200, fmax_mhz: 162.9, headroom_pct: -18.55, area_um2: 20482.144, method: opensta_liberty, confidence: 0.5, meets_target: false, report: runs/feasibility/sync_fifo/20261125-144614-4f87a0/report.json}

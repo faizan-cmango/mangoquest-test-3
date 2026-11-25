@@ -1,0 +1,104 @@
+rtm: spec/sync_fifo/rtm.yaml@v0.1
+block: sync_fifo
+requirements:
+  - id: REQ-3.1.1
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 2}
+    text: "The FIFO shall accept the value of in_data as one word at each core_clk rising edge at which rst_n is 1 and in_valid and in_ready are both 1, and at no other edge."
+  - id: REQ-3.1.2
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: formal
+    source: {list: brief, entry: 1}
+    text: "The FIFO shall present the accepted words on out_data in the order accepted, each exactly once, a word being taken at each core_clk rising edge at which out_valid and out_ready are both 1, with no word lost or duplicated."
+  - id: REQ-3.1.3
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 3}
+    text: "While rst_n is 1, out_valid is 1 and out_ready is 0, out_valid shall stay 1 and out_data shall keep its value across every core_clk rising edge."
+  - id: REQ-3.1.4
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 2}
+    text: "When no word is held and a word is accepted at a core_clk rising edge, out_valid shall be 1 and out_data shall show that word immediately after that edge, 1 cycle later."
+  - id: REQ-3.2.1
+    section: "3.2"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: formal
+    source: {list: brief, entry: 1}
+    text: "Starting from no word held with out_ready at 0, the FIFO shall accept exactly 16 words, with in_ready at 1 before each of the 16 acceptances and at 0 after the 16th."
+  - id: REQ-3.2.2
+    section: "3.2"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: formal
+    source: {list: brief, entry: 1}
+    text: "While 16 words are held and out_ready is 0, in_ready shall be 0 and the FIFO shall accept no word."
+  - id: REQ-3.2.3
+    section: "3.2"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: formal
+    source: {list: brief, entry: 3}
+    text: "While 16 words are held and out_ready is 1, in_ready shall be 1, so that with in_valid at 1 one word is accepted and the oldest word is taken at the same core_clk rising edge and 16 words remain held."
+  - id: REQ-3.2.4
+    section: "3.2"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 2}
+    text: "When 1 to 15 words are held and in_valid, in_ready, out_valid and out_ready are all 1 at a core_clk rising edge, the FIFO shall accept one word and take the oldest word at that edge, leaving the number of words held unchanged."
+  - id: REQ-3.2.5
+    section: "3.2"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 1}
+    text: "out_valid shall be 1 while at least one word is held and 0 while no word is held."
+  - id: REQ-3.3.1
+    section: "3.3"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 4}
+    text: "While rst_n is 0, in_ready shall be 0 and no word shall be accepted."
+  - id: REQ-3.3.2
+    section: "3.3"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 4}
+    text: "After a core_clk rising edge at which rst_n is 0, out_valid shall be 0 and out_data shall be 0 until a word is next accepted."
+  - id: REQ-3.3.3
+    section: "3.3"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 4}
+    text: "A word held when a core_clk rising edge with rst_n at 0 occurs shall never appear on out_data afterwards, and the FIFO shall then accept 16 new words with out_ready at 0."
+  - id: REQ-6.1.1
+    section: "6.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: analysis
+    source: {list: brief, entry: 3}
+    evidence: "feasibility report of block sync_fifo at 200 MHz (OpenSTA, sky130_fd_sc_hd): worst setup slack not negative"
+    text: "The FIFO shall meet setup timing at a core_clk of 200 MHz, with input and output delays of 30 % of the period."
+  - id: REQ-6.1.2
+    section: "6.1"
+    owner: kemi
+    risk: LOW
+    verif_method: inspection
+    source: {list: brief, entry: 3}
+    evidence: "RTL inspection and simulation waveform: out_valid and out_data change only just after a core_clk rising edge"
+    text: "out_valid and out_data shall change only at a core_clk rising edge, and shall not depend on in_valid, in_data or out_ready in the same cycle."
+retired: {}

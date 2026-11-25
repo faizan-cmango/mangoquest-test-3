@@ -1,0 +1,47 @@
+decisions:
+  - id: ADR-01
+    date: 2026-11-25
+    status: proposed
+    title: "in_ready depends combinationally on out_ready so that a full FIFO accepts and releases in the same cycle"
+    req_ids: [REQ-3.2.2, REQ-3.2.3]
+    context: "The brief asks for enqueue and dequeue in the same cycle when full, and for no added ports. With in_ready driven only by occupancy, a full FIFO would refuse in_valid in the cycle it releases a word. Both hold only if in_ready is 1 when full and out_ready is 1."
+    alternatives: ["in_ready from occupancy only (breaks the full simultaneous requirement)", "a skid buffer giving 17 words (breaks the capacity of exactly 16)", "in_ready = not full or out_ready (chosen)"]
+    decision: "in_ready is 1 when fewer than 16 words are held or when out_ready is 1 with out_valid 1, and 0 while rst_n is 0. It never depends on in_valid or in_data. The path out_ready to in_ready is one gate, inside the 30 % input and output delay budget."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+  - id: ADR-02
+    date: 2026-11-25
+    status: proposed
+    title: "Reset: in_ready gated by rst_n, outputs cleared at the edge"
+    req_ids: [REQ-3.3.1, REQ-3.3.2, REQ-3.3.3]
+    context: "The brief asks for an active-low synchronous reset that empties the FIFO. A transfer during reset would otherwise be seen by the source and lost."
+    alternatives: ["let in_ready follow occupancy during reset and ignore the data (a lost transfer)", "gate in_ready with rst_n (chosen)"]
+    decision: "in_ready is 0 while rst_n is 0; out_valid and out_data are cleared at the rising edge with rst_n 0; out_data resets to 0 so every output has a numeric reset value."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+  - id: ADR-03
+    date: 2026-11-25
+    status: proposed
+    title: "No bypass: a word accepted into an empty FIFO appears on the output 1 cycle later"
+    req_ids: [REQ-3.1.4, REQ-6.1.2]
+    context: "A combinational path from in_data to out_data would make out_valid and out_data depend on in_valid in the same cycle and add an in-to-out timing path."
+    alternatives: ["combinational bypass when empty (0-cycle latency, input-to-output path)", "write through the output stage, 1 cycle (chosen)"]
+    decision: "Latency is 1 cycle; out_valid and out_data change only at core_clk edges."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+  - id: ADR-04
+    date: 2026-11-25
+    status: proposed
+    title: "Head output stage plus a 15-word store, same ports and capacity 16"
+    req_ids: [REQ-3.1.3, REQ-3.2.1, REQ-6.1.1, REQ-6.1.2]
+    context: "A 16-word memory read through a 16:1 mux straight to out_data puts the mux and the output delay on one path; a measurement in the request thread reported a 2.746 ns miss at 200 MHz for it. The person asked to keep the frequency and the ports."
+    alternatives: ["direct 16-word read mux to out_data (reported to miss 200 MHz)", "lower the clock (errata_major, refused by the brief)", "head output stage of 32 flops plus a 15-word circular store (chosen)"]
+    decision: "The oldest word sits in a 32-bit output stage that drives out_data and out_valid; the 15 younger words wait in a circular store with its own read, write and count. Total capacity is 1 + 15 = 16. The store's 15:1 read runs from flop to flop. Measured again on the proxy by feasibility (section 6 of sad.md)."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+  - id: ADR-05
+    date: 2026-11-25
+    status: proposed
+    title: "Proposed fix for AC-1: one-hot, replicated read select of the store; the 200 MHz target is kept"
+    req_ids: [REQ-6.1.1]
+    challenge_ref: AC-1
+    context: "The ADR-04 proxy measured 162.9 MHz (slack -1.14 ns at 200 MHz, tt). The worst paths start at one read-select flop that drives the 15:1 read mux of 32 bits unbuffered (clock-to-Q 4.2 ns of the 5 ns period)."
+    alternatives: ["errata_major lowering core_clk to 160 MHz or less (the brief refuses it)", "keep the proxy as is and rely on synthesis buffering in the real flow (unproven)", "one-hot read select with its drivers replicated per byte lane, so each select drives 8 mux bits (chosen, to be re-measured)"]
+    decision: "The store read select is held one-hot and replicated per byte lane; ports, capacity and behaviour do not change. Kemi builds it, and feasibility is run again on Kemi's RTL; the person decides whether to accept this ADR or an errata_major on the frequency."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}

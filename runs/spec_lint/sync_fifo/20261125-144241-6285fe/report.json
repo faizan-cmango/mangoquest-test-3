@@ -1,0 +1,76 @@
+{
+  "kind": "spec_lint",
+  "schema_version": 1,
+  "tool": "spec_lint",
+  "block": "sync_fifo",
+  "inputs": [
+    {
+      "path": "spec/sync_fifo/clocks.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/errata.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/rtm.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/s_in.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/m_out.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/riskmap.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.md",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/decisions.yaml",
+      "version": 3,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/vps.yaml",
+      "version": 3,
+      "sha256": ""
+    }
+  ],
+  "package": "spec/sync_fifo",
+  "lint": "chidi-speclint 1.1.0 (MQ-ARC-CDA-01 A.7) + MQ checks 1.0 + MQ house rules 1.1.0",
+  "revising": false,
+  "compared": false,
+  "errors": 0,
+  "warnings": 0,
+  "to_explain": 0,
+  "advisory": 0,
+  "info": 6,
+  "findings": [],
+  "findings_not_kept": 0,
+  "not_compared": {},
+  "reset_only": [
+    "VPS-08"
+  ],
+  "revises": {},
+  "review": [],
+  "stale_downstream": []
+}

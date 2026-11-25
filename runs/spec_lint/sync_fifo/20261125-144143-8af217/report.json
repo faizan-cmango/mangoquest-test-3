@@ -1,0 +1,140 @@
+{
+  "kind": "spec_lint",
+  "schema_version": 1,
+  "tool": "spec_lint",
+  "block": "sync_fifo",
+  "inputs": [
+    {
+      "path": "spec/sync_fifo/clocks.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/errata.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/rtm.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/decisions.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/s_in.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/m_out.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/riskmap.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/vps.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.yaml",
+      "version": 1,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.md",
+      "version": 1,
+      "sha256": ""
+    }
+  ],
+  "package": "spec/sync_fifo",
+  "lint": "chidi-speclint 1.1.0 (MQ-ARC-CDA-01 A.7) + MQ checks 1.0 + MQ house rules 1.1.0",
+  "revising": false,
+  "compared": false,
+  "errors": 9,
+  "warnings": 0,
+  "to_explain": 0,
+  "advisory": 0,
+  "info": 6,
+  "findings": [
+    {
+      "rule": "CHIDI-SPC-047",
+      "severity": "error",
+      "label": "error",
+      "location": "VPS-01",
+      "message": "observe[] lists out_data but no check reads it"
+    },
+    {
+      "rule": "CHIDI-SPC-047",
+      "severity": "error",
+      "label": "error",
+      "location": "VPS-03",
+      "message": "'if' guards an event, not a state: 'in_ready == 0 while low(out_ready) if stall(in_valid)'"
+    },
+    {
+      "rule": "CHIDI-SPC-047",
+      "severity": "error",
+      "label": "error",
+      "location": "VPS-04",
+      "message": "stall is a state, not an event: 'out_valid == 1 for at least 1 cycles after stall(out_valid)'"
+    },
+    {
+      "rule": "CHIDI-SPC-047",
+      "severity": "error",
+      "label": "error",
+      "location": "VPS-04",
+      "message": "observe[] lists out_data but no check reads it"
+    },
+    {
+      "rule": "CHIDI-SPC-047",
+      "severity": "error",
+      "label": "error",
+      "location": "VPS-05",
+      "message": "observe[] lists out_data but no check reads it"
+    },
+    {
+      "rule": "CHIDI-SPC-047",
+      "severity": "error",
+      "label": "error",
+      "location": "VPS-06",
+      "message": "'if' guards an event, not a state: 'in_ready == 1 while high(out_ready) if high(out_valid)'"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-01",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-02",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-03",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    }
+  ],
+  "findings_not_kept": 0,
+  "not_compared": {},
+  "reset_only": [
+    "VPS-08"
+  ],
+  "revises": {},
+  "review": [],
+  "stale_downstream": []
+}

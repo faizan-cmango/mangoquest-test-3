@@ -1,0 +1,11 @@
+strategy: >-
+  One clock domain: core_clk at 200 MHz, as the brief fixes. No clock crossing exists. rst_n is
+  an active-low reset sampled only at core_clk rising edges (synchronous assertion and release);
+  the reset controller that drives it is outside this package and releases it synchronously to core_clk.
+clocks:
+  - {name: core_clk, freq_mhz: 200, source: system clock pin, domain: core}
+resets:
+  - {name: rst_n, domain: core, style: sync, polarity: active_low, assert: synchronous, deassert: synchronous, sync_clock: core_clk, source: system reset controller}
+cdc: []
+blocks:
+  - {id: sync_fifo, clock: core_clk, reset: rst_n, cdc_inputs: []}
