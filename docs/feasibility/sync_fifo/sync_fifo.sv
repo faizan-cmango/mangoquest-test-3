@@ -1,3 +1,4 @@
+// Proxy of the sync_fifo architecture (ADR-04): head output register plus 15-word store.
 module sync_fifo (
   input  logic        core_clk,
   input  logic        rst_n,
@@ -8,23 +9,35 @@ module sync_fifo (
   input  logic        out_ready,
   output logic [31:0] out_data
 );
-  logic [31:0] mem [0:15];
-  logic [3:0]  wp, rp;
-  logic [4:0]  cnt;
-  wire full  = cnt[4];
-  wire empty = (cnt == 5'd0);
-  assign in_ready  = rst_n & (~full | out_ready);
-  assign out_valid = rst_n & ~empty;
-  wire push = in_valid & in_ready;
-  wire pop  = out_valid & out_ready;
+  logic [31:0] mem [0:14];
+  logic [3:0]  rp, wp, cnt;
+
+  wire full = out_valid && (cnt == 4'd15);
+  assign in_ready = rst_n && (!full || out_ready);
+  wire enq  = in_valid && in_ready;
+  wire deq  = out_valid && out_ready;
+  wire pop  = deq && (cnt != 4'd0);
+  wire push = enq && out_valid && !(deq && cnt == 4'd0);
+
   always_ff @(posedge core_clk) begin
     if (!rst_n) begin
-      wp <= 4'd0; rp <= 4'd0; cnt <= 5'd0;
+      out_valid <= 1'b0;
+      out_data  <= 32'd0;
+      rp <= 4'd0; wp <= 4'd0; cnt <= 4'd0;
     end else begin
-      if (push) begin mem[wp] <= in_data; wp <= wp + 4'd1; end
-      if (pop)  rp <= rp + 4'd1;
-      cnt <= cnt + {4'd0, push} - {4'd0, pop};
+      if (!out_valid) begin
+        if (enq) begin out_data <= in_data; out_valid <= 1'b1; end
+      end else if (deq) begin
+        if (cnt != 4'd0) out_data <= mem[rp];
+        else if (enq)    out_data <= in_data;
+        else             out_valid <= 1'b0;
+      end
+      if (push) begin
+        mem[wp] <= in_data;
+        wp <= (wp == 4'd14) ? 4'd0 : wp + 4'd1;
+      end
+      if (pop) rp <= (rp == 4'd14) ? 4'd0 : rp + 4'd1;
+      cnt <= cnt + {3'd0, push} - {3'd0, pop};
     end
   end
-  assign out_data = mem[rp];
 endmodule

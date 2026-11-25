@@ -1,0 +1,120 @@
+{
+  "kind": "spec_lint",
+  "schema_version": 1,
+  "tool": "spec_lint",
+  "block": "sync_fifo",
+  "inputs": [
+    {
+      "path": "spec/sync_fifo/clocks.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/errata.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/s_in.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/m_out.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/vps.yaml",
+      "version": 4,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/riskmap.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/rtm.yaml",
+      "version": 3,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.yaml",
+      "version": 4,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.md",
+      "version": 3,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/decisions.yaml",
+      "version": 5,
+      "sha256": ""
+    }
+  ],
+  "package": "spec/sync_fifo",
+  "lint": "chidi-speclint 1.1.0 (MQ-ARC-CDA-01 A.7) + MQ checks 1.0 + MQ house rules 1.1.0",
+  "revising": false,
+  "compared": false,
+  "errors": 6,
+  "warnings": 0,
+  "to_explain": 0,
+  "advisory": 0,
+  "info": 6,
+  "findings": [
+    {
+      "rule": "CHIDI-SPC-046",
+      "severity": "error",
+      "label": "error",
+      "location": "REQ-3.1.2",
+      "message": "riskmap requires formal but no scenario is marked formal"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-01",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-02",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-03",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-04",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    },
+    {
+      "rule": "CHIDI-SPC-054",
+      "severity": "error",
+      "label": "error",
+      "location": "ADR-05",
+      "message": "decided at rung adr by act-ola, not 5c713704-7914-432a-b693-5f5d3f0c017b or faizan@chipmango.com or Muhammad Faizan"
+    }
+  ],
+  "findings_not_kept": 0,
+  "not_compared": {},
+  "reset_only": [
+    "VPS-01",
+    "VPS-09"
+  ],
+  "revises": {},
+  "review": [],
+  "stale_downstream": []
+}

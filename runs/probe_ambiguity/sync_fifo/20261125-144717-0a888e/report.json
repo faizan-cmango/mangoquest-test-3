@@ -1,0 +1,215 @@
+{
+  "kind": "probe",
+  "schema_version": 1,
+  "tool": "probe_ambiguity",
+  "block": "sync_fifo",
+  "inputs": [
+    {
+      "path": "spec/sync_fifo/clocks.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/errata.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/s_in.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/idd/m_out.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/riskmap.yaml",
+      "version": 2,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/rtm.yaml",
+      "version": 3,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.yaml",
+      "version": 4,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/sad.md",
+      "version": 3,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/decisions.yaml",
+      "version": 6,
+      "sha256": ""
+    },
+    {
+      "path": "spec/sync_fifo/vps.yaml",
+      "version": 6,
+      "sha256": ""
+    }
+  ],
+  "package": "spec/sync_fifo",
+  "method": "static: a variant is distinguished when a scenario's check constrains the clause it changes (no variant RTL is simulated in v1.0)",
+  "variant_library": "MQ variants 1.0",
+  "check_set": "sha256:da499e22cbd91974",
+  "checks": 15,
+  "probed": 8,
+  "distinguished": 8,
+  "witnesses": 0,
+  "witnesses_with_proposal": 0,
+  "variants": [
+    {
+      "variant": "IDD-S_IN/reset",
+      "source": "library",
+      "clause_class": "a rule about the outputs while reset",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-01",
+        "VPS-09"
+      ],
+      "proposal": "",
+      "interface": "IDD-S_IN",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": ""
+    },
+    {
+      "variant": "IDD-S_IN/vr-ready-low",
+      "source": "library",
+      "clause_class": "a rule about when ready is low",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-05",
+        "VPS-06",
+        "VPS-07",
+        "VPS-08"
+      ],
+      "proposal": "",
+      "interface": "IDD-S_IN",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": ""
+    },
+    {
+      "variant": "IDD-M_OUT/reset",
+      "source": "library",
+      "clause_class": "a rule about the outputs while reset",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-01",
+        "VPS-09"
+      ],
+      "proposal": "",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": ""
+    },
+    {
+      "variant": "IDD-M_OUT/vr-payload-stall",
+      "source": "library",
+      "clause_class": "a rule about the payload while a transfer is stalled",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-04"
+      ],
+      "proposal": "",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": ""
+    },
+    {
+      "variant": "IDD-M_OUT/vr-valid-after-xfer",
+      "source": "library",
+      "clause_class": "a rule about valid after a transfer (back to back, or a gap)",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-02",
+        "VPS-03",
+        "VPS-10"
+      ],
+      "proposal": "",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": ""
+    },
+    {
+      "variant": "IDD-M_OUT/vr-latency",
+      "source": "library",
+      "clause_class": "a rule about the cycles from an input transfer to the output",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-02",
+        "VPS-03",
+        "VPS-10"
+      ],
+      "proposal": "",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": ""
+    },
+    {
+      "variant": "REQ-3.1.4/A",
+      "source": "interpretation",
+      "clause_class": "out_valid is 1 one cycle after the accepting edge",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-02",
+        "VPS-03"
+      ],
+      "proposal": "",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": "REQ-3.1.4"
+    },
+    {
+      "variant": "REQ-3.1.4/B",
+      "source": "interpretation",
+      "clause_class": "out_valid is 1 two cycles after the accepting edge",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-02",
+        "VPS-03"
+      ],
+      "proposal": "",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "block": "sync_fifo",
+      "risk": "MEDIUM",
+      "requirement": "REQ-3.1.4"
+    }
+  ],
+  "ambiguities": [
+    {
+      "requirement": "REQ-3.1.4",
+      "interpretations": [
+        "A",
+        "B"
+      ],
+      "pinned": "A",
+      "contradiction": [],
+      "scenarios": [
+        "VPS-02",
+        "VPS-03"
+      ]
+    }
+  ]
+}
