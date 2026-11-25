@@ -1,0 +1,91 @@
+vps: spec/sync_fifo/vps.yaml@v0.1
+block: sync_fifo
+scenarios:
+  - id: VPS-01
+    slug: order_integrity
+    req_ids: [REQ-3.1.1]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "Random in_valid, in_data and out_ready; a scoreboard compares every released word, in order, with every accepted word."
+    expected: "Released words equal accepted words in order; none lost, none duplicated."
+    checks: ["out_valid == 1 within 1 cycles after xfer(in_valid)"]
+    distinguishes: {occupancy: [empty, mid, full]}
+    formal: true
+  - id: VPS-02
+    slug: transfer_rule
+    req_ids: [REQ-3.1.2]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "Drive in_valid with and without in_ready, out_ready with and without out_valid."
+    expected: "A word is stored only at an edge with in_valid and in_ready 1; released only at an edge with out_valid and out_ready 1."
+    checks: ["out_valid == 1 within 1 cycles after xfer(in_valid)"]
+    distinguishes: {handshake: [valid_only, ready_only, both]}
+    formal: false
+  - id: VPS-03
+    slug: capacity_16
+    req_ids: [REQ-3.1.3]
+    observe: [IDD-S_IN.in_ready]
+    intent: "After reset hold out_ready 0 and offer 20 words with in_valid 1."
+    expected: "Exactly 16 words accepted, in_ready 0 from the cycle after the 16th."
+    checks: ["in_ready == 0 while stall(in_valid)"]
+    distinguishes: {count_at: [zero, mid, max]}
+    formal: true
+  - id: VPS-04
+    slug: stall_stability
+    req_ids: [REQ-3.1.4]
+    observe: [IDD-M_OUT.out_valid, IDD-M_OUT.out_data]
+    intent: "Hold out_ready 0 for many cycles while in_valid offers new words; every word driven is nonzero, so out_data reads nonzero and its value is compared with the oldest word."
+    expected: "out_valid stays 1 and out_data equals the oldest word throughout the stall."
+    checks: ["out_valid == 1 while stall(out_valid)", "out_data != 0 while stall(out_valid)"]
+    distinguishes: {stall_length: [1, 2-15, 16+]}
+    formal: false
+  - id: VPS-05
+    slug: simultaneous_partial
+    req_ids: [REQ-3.1.5]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "With 1 to 15 words held, in_valid and out_ready both 1 for many cycles."
+    expected: "Occupancy unchanged, order intact."
+    checks: ["out_valid == 1 within 1 cycles after xfer(in_valid)"]
+    distinguishes: {occupancy: [one, mid, fifteen]}
+    formal: false
+  - id: VPS-06
+    slug: full_simultaneous
+    req_ids: [REQ-3.1.6]
+    observe: [IDD-S_IN.in_ready]
+    intent: "Fill to 16, then in_valid 1 and out_ready 1 together, then out_ready 0."
+    expected: "in_ready is 1 in the cycle out_ready is 1 at 16 words; one word in, oldest out at the same edge; in_ready 0 when out_ready drops."
+    checks: ["in_ready == 1 at xfer(out_valid)"]
+    distinguishes: {out_ready: [low, high]}
+    formal: false
+  - id: VPS-07
+    slug: empty_latency
+    req_ids: [REQ-3.1.7]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "Empty FIFO, in_valid 1 and out_ready 1."
+    expected: "out_valid 0 in the write cycle, 1 in the next."
+    checks: ["out_valid == 0 at reset_release", "out_valid == 1 within 1 cycles after xfer(in_valid)"]
+    distinguishes: {state: [empty, one_word]}
+    formal: false
+  - id: VPS-08
+    slug: reset_outputs
+    req_ids: [REQ-3.2.1]
+    observe: [IDD-M_OUT.out_valid, IDD-S_IN.in_ready]
+    intent: "Hold rst_n 0 with in_valid 1 and out_ready 1, from an empty and from a full state."
+    expected: "out_valid and in_ready are 0 throughout reset; nothing is accepted."
+    checks: ["out_valid == 0 while reset", "in_ready == 0 while reset"]
+    distinguishes: {state_at_reset: [empty, partial, full]}
+    formal: false
+  - id: VPS-09
+    slug: reset_discard
+    req_ids: [REQ-3.2.2]
+    observe: [IDD-M_OUT.out_valid]
+    intent: "Fill the FIFO, apply reset for one or more edges, release, leave in_valid 0."
+    expected: "out_valid stays 0 after release until a word is accepted."
+    checks: ["out_valid == 0 at reset_release", "out_valid == 1 within 1 cycles after xfer(in_valid)"]
+    distinguishes: {reset_length: [1, 2+]}
+    formal: false
+environment:
+  in_valid: "any value each cycle"
+  in_data: "any 32-bit value"
+  out_ready: "any value each cycle, including 1 while out_valid is 0"
+  rst_n: "synchronous to core_clk, any length of at least 1 edge"
+  illegal_inputs: ["rst_n changing between edges of core_clk", "X or Z on in_valid, out_ready or rst_n"]
+retired: {}

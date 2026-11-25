@@ -1,0 +1,53 @@
+decisions:
+  - id: ADR-01
+    date: 2026-11-25
+    status: proposed
+    title: "in_ready depends combinationally on out_ready so a full FIFO can accept and release in the same cycle"
+    req_ids: [REQ-3.1.6, REQ-3.1.3]
+    context: >-
+      The brief asks for enqueue and dequeue in the same cycle when the FIFO is full, and for no extra
+      ports. If in_ready depended only on stored occupancy, a full FIFO would refuse in_valid even while
+      out_ready is 1, so the two requirements would conflict. They are compatible when in_ready also
+      follows out_ready within the cycle.
+    alternatives:
+      - "in_ready from occupancy only: simplest timing, but breaks the full-FIFO simultaneous transfer requirement"
+      - "skid or output register stage: breaks the same requirement path, adds a stage and a 17th storage word, so capacity is no longer exactly 16"
+      - "in_ready = rst_n and (not full or out_ready): chosen; one out_ready to in_ready feed-through of about three gates"
+    decision: "Use in_ready = not full or out_ready (gated by rst_n). The out_ready to in_ready path is combinational; there is no loop because out_valid depends only on stored state."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+  - id: ADR-02
+    date: 2026-11-25
+    status: proposed
+    title: "Output driven from storage, no bypass, one-cycle write-to-read latency"
+    req_ids: [REQ-3.1.4, REQ-3.1.7]
+    context: "Simplest architecture that keeps out_valid and out_data stable during stalls and holds exactly 16 words."
+    alternatives:
+      - "Bypass of in_data to out_data when empty: zero latency, but puts input-to-output paths in the 200 MHz budget and complicates stability"
+      - "Output register stage: extra stage and extra word, rejected as unnecessary"
+      - "Circular 16-entry storage read directly at the output: chosen"
+    decision: "16-entry circular storage, 4-bit write and read positions, a 5-bit occupancy count (0 to 16); out_data is read from storage, so a word accepted at an edge is visible after that edge."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+  - id: ADR-03
+    date: 2026-11-25
+    status: proposed
+    title: "Reset gates in_ready and out_valid combinationally"
+    req_ids: [REQ-3.2.1, REQ-3.2.2]
+    context: "The brief fixes a synchronous reset. A purely clocked reset leaves in_ready and out_valid at their old values until the first edge with rst_n 0."
+    alternatives:
+      - "No gating: outputs reach reset values only after the first clock edge in reset"
+      - "Gate in_ready and out_valid with rst_n: chosen, one AND gate each"
+    decision: "out_valid and in_ready are 0 whenever rst_n is 0; an edge with rst_n 0 also empties the FIFO. out_data has no reset value and is undefined while out_valid is 0."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+  - id: ADR-04
+    date: 2026-11-25
+    status: proposed
+    title: "Head register drives the output to meet 200 MHz (proposal for AC-1)"
+    req_ids: [REQ-6.1.1, REQ-3.1.4]
+    context: "The feasibility proxy missed 200 MHz by 2.746 ns on the read mux to out_data path; the target is not relaxed."
+    alternatives:
+      - "Lower the clock frequency: an errata_major, not proposed"
+      - "Keep the direct read mux: measured miss"
+      - "Head register for the oldest word plus a 15-entry store: total capacity stays 16, no new port, out_data and out_valid come straight from flops"
+    decision: "Proposed, not applied: split storage into a head register driving the output and a 15-word store feeding it; the requirements in rtm.yaml are unchanged. To be measured with a proxy once a person accepts it."
+    decided_by: {actor_ref: faizan@chipmango.com, role: adr}
+    challenge_ref: AC-1

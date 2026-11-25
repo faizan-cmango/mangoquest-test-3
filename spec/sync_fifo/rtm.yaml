@@ -1,0 +1,83 @@
+rtm: spec/sync_fifo/rtm.yaml@v0.1
+block: sync_fifo
+requirements:
+  - id: REQ-3.1.1
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: formal
+    source: {list: brief, entry: 8}
+    text: "The FIFO shall present the words it accepted on out_data in the order they were accepted, each word exactly once, with no word lost and none duplicated."
+  - id: REQ-3.1.2
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 9}
+    text: "The FIFO shall accept in_data at a core_clk rising edge where rst_n is 1, in_valid is 1 and in_ready is 1, and shall release the oldest word at a core_clk rising edge where out_valid is 1 and out_ready is 1; no other edge shall accept or release a word."
+  - id: REQ-3.1.3
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: formal
+    source: {list: brief, entry: 13}
+    text: "With out_ready held at 0 after reset, the FIFO shall accept exactly 16 words, with in_ready at 1 until the 16th word is accepted and at 0 afterwards, and shall never hold more than 16 words."
+  - id: REQ-3.1.4
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 10}
+    text: "While out_valid is 1 and out_ready is 0, the FIFO shall keep out_valid at 1 and out_data unchanged at the next core_clk rising edge, for as long as the stall lasts."
+  - id: REQ-3.1.5
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 11}
+    text: "When a word is accepted and a word is released at the same core_clk rising edge, the FIFO shall keep the number of words it holds unchanged and the order of the words intact."
+  - id: REQ-3.1.6
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 12}
+    text: "While the FIFO holds 16 words and out_ready is 1, in_ready shall be 1 in the same cycle, so that a word is accepted and the oldest word released at the same core_clk rising edge when in_valid is 1."
+  - id: REQ-3.1.7
+    section: "3.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 9}
+    text: "While the FIFO holds no word, out_valid shall be 0 even if in_valid is 1 in that cycle; a word accepted at a core_clk rising edge shall appear on out_data with out_valid at 1 in the cycle after that edge, when the FIFO held no word before it."
+  - id: REQ-3.2.1
+    section: "3.2"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 4}
+    text: "While rst_n is 0, out_valid shall be 0 and in_ready shall be 0 whatever in_valid and out_ready are, and no word shall be accepted or released."
+  - id: REQ-3.2.2
+    section: "3.2"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: simulation
+    source: {list: brief, entry: 7}
+    text: "A core_clk rising edge where rst_n is 0 shall discard every word held, however many, so that out_valid stays 0 after rst_n returns to 1 until a word is accepted."
+  - id: REQ-4.1.1
+    section: "4.1"
+    owner: kemi
+    risk: LOW
+    verif_method: inspection
+    source: {list: brief, entry: 18}
+    evidence: "Inspection of the top module ports against IDD-S_IN and IDD-M_OUT: core_clk, rst_n, in_valid, in_ready, in_data[31:0], out_valid, out_ready, out_data[31:0] and no others."
+    text: "The FIFO shall have exactly the ports core_clk, rst_n, in_valid, in_ready, in_data of 32 bits, out_valid, out_ready and out_data of 32 bits, and no other port."
+  - id: REQ-6.1.1
+    section: "6.1"
+    owner: kemi
+    risk: MEDIUM
+    verif_method: analysis
+    source: {list: brief, entry: 3}
+    evidence: "Static timing of the synthesised block at 200 MHz with input and output delays of 30 % of the period (feasibility report), all setup paths meeting with non-negative slack."
+    text: "The FIFO shall meet its setup timing at a core_clk of 200 MHz, with input and output delays of 30 % of the period, including the out_ready to in_ready path."
+retired: {}

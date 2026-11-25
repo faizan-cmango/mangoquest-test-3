@@ -1,0 +1,167 @@
+{
+  "tool": "chidi-probe 1.0.0",
+  "method": "static: a variant is distinguished when a scenario's check constrains the clause it changes (no variant RTL is simulated in v1.0)",
+  "package": "spec/sync_fifo",
+  "vps": "spec/sync_fifo/vps.yaml",
+  "variant_library": {
+    "version": "MQ variants 1.0",
+    "variants": 34
+  },
+  "check_set": {
+    "hash": "sha256:3fb335ceddf062db",
+    "checks": 13
+  },
+  "counts": {
+    "probed": 8,
+    "distinguished": 8,
+    "witnesses": 0,
+    "witnesses_with_proposal": 0,
+    "closure": 1.0
+  },
+  "variants": [
+    {
+      "variant": "IDD-S_IN/reset",
+      "source": "library",
+      "interface": "IDD-S_IN",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "",
+      "clause_class": "a rule about the outputs while reset",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-08"
+      ]
+    },
+    {
+      "variant": "IDD-S_IN/vr-ready-low",
+      "source": "library",
+      "interface": "IDD-S_IN",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "",
+      "clause_class": "a rule about when ready is low",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-03",
+        "VPS-06"
+      ]
+    },
+    {
+      "variant": "IDD-M_OUT/reset",
+      "source": "library",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "",
+      "clause_class": "a rule about the outputs while reset",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-07",
+        "VPS-08",
+        "VPS-09"
+      ]
+    },
+    {
+      "variant": "IDD-M_OUT/vr-payload-stall",
+      "source": "library",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "",
+      "clause_class": "a rule about the payload while a transfer is stalled",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-04"
+      ]
+    },
+    {
+      "variant": "IDD-M_OUT/vr-valid-after-xfer",
+      "source": "library",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "",
+      "clause_class": "a rule about valid after a transfer (back to back, or a gap)",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-01",
+        "VPS-02",
+        "VPS-05",
+        "VPS-07",
+        "VPS-09"
+      ]
+    },
+    {
+      "variant": "IDD-M_OUT/vr-latency",
+      "source": "library",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "",
+      "clause_class": "a rule about the cycles from an input transfer to the output",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-01",
+        "VPS-02",
+        "VPS-05",
+        "VPS-07",
+        "VPS-09"
+      ]
+    },
+    {
+      "variant": "REQ-3.1.7/A",
+      "source": "interpretation",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "REQ-3.1.7",
+      "clause_class": "No bypass: out_valid rises the cycle after the accepting edge",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-01",
+        "VPS-02",
+        "VPS-05",
+        "VPS-07",
+        "VPS-09"
+      ]
+    },
+    {
+      "variant": "REQ-3.1.7/B",
+      "source": "interpretation",
+      "interface": "IDD-M_OUT",
+      "interface_class": "valid-ready",
+      "risk": "MEDIUM",
+      "requirement": "REQ-3.1.7",
+      "clause_class": "Bypass: out_valid is 1 in the same cycle as in_valid into an empty FIFO",
+      "witness": false,
+      "distinguished_by": [
+        "VPS-01",
+        "VPS-02",
+        "VPS-05",
+        "VPS-07",
+        "VPS-09"
+      ]
+    }
+  ],
+  "ambiguities": [
+    {
+      "requirement": "REQ-3.1.7",
+      "interpretations": [
+        "A",
+        "B"
+      ],
+      "pinned": "A",
+      "contradiction": [],
+      "scenarios": [
+        "VPS-01",
+        "VPS-02",
+        "VPS-05",
+        "VPS-07",
+        "VPS-09"
+      ]
+    }
+  ],
+  "notes": [
+    "static: a variant is distinguished when a scenario's check constrains the clause it changes (no variant RTL is simulated in v1.0)"
+  ]
+}

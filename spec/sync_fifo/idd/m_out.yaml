@@ -1,0 +1,25 @@
+idd: IDD-M_OUT
+version: "0.1"
+block: sync_fifo
+side: master
+protocol_class: valid-ready
+sad_section: "4.1"
+clock: core_clk
+reset: rst_n
+ports:
+  - {name: out_valid, dir: out, width: 1, type: logic, req: REQ-3.1.4, reset_value: 0, meaning: "The FIFO holds a word and out_data shows the oldest; 0 while rst_n is 0"}
+  - {name: out_data, dir: out, width: 32, type: logic, req: REQ-3.1.1, reset_value: none, reset_reason: "Only meaningful while out_valid is 1; storage is not cleared by reset, so it is undefined while out_valid is 0", meaning: "Oldest word held"}
+  - {name: out_ready, dir: in, width: 1, type: logic, req: REQ-3.1.2, reset_value: n/a, meaning: "Downstream takes out_data at this edge when out_valid is 1"}
+omitted_signals: []
+rules:
+  - {id: R1, holder: slave, req: REQ-3.1.4, text: "While out_valid is 1 and out_ready is 0, out_valid stays 1 and out_data does not change at the next edge."}
+  - {id: R2, holder: master, req: REQ-3.1.2, text: "A word is released at a core_clk rising edge with out_valid 1 and out_ready 1."}
+  - {id: R3, holder: master, req: REQ-3.1.6, text: "out_ready may be 1 while out_valid is 0; nothing is released."}
+  - {id: R4, holder: master, req: REQ-3.2.1, text: "out_ready is ignored while rst_n is 0."}
+timing:
+  - {req: REQ-3.1.7, clock: core_clk, from: "accepting edge into an empty FIFO", to: "out_valid 1", cycles: 1, text: "No bypass: out_valid is 0 in the cycle an empty FIFO is written."}
+corner_cases:
+  - {id: C1, req: REQ-3.1.4, text: "Long stall of out_ready 0 while more words arrive: out_data stays the oldest word.", vps: VPS-04}
+  - {id: C2, req: REQ-3.1.7, text: "Empty FIFO with in_valid 1 and out_ready 1: no word on the output that cycle.", vps: VPS-07}
+  - {id: C3, req: REQ-3.2.2, text: "Reset while words are held: out_valid 0 after release.", vps: VPS-09}
+errata_applied: []
